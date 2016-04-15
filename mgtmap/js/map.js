@@ -1,7 +1,7 @@
 ymaps.ready(function() {
     // localStorage.clear();
 
-    var busMap = {
+    busMap = {
         _map : new ymaps.Map('map', $.extend({
             controls: ['zoomControl']
         }, (localStorage.getItem('bounds') && !isNaN(JSON.parse(localStorage.getItem('bounds'))[0][0]))? {
@@ -10,6 +10,12 @@ ymaps.ready(function() {
             center : [55.79, 37.49],
             zoom : 14
         })),
+
+        _timeSettings : {
+            dow : ({ 6 : 32, 0 : 64 })[(new Date()).getDay()] || 1,
+            from : (new Date()).getHours(),
+            to : (new Date()).getHours()
+        },
 
         _loadCache : {},
 
@@ -22,6 +28,8 @@ ymaps.ready(function() {
         _visibleSegments : {},
 
         _widths : {},
+
+        _widthFactor : 1,
 
         _routesBySegment : {}, 
 
@@ -70,20 +78,135 @@ ymaps.ready(function() {
         },
 
         init : function() {
-            this._load('data/widths.json', function(widths) {
+            this._createTimeControls();
+
+            this._load('data/freqs.json', function(freqs) {
                 this._load('data/routes.json', function(routes) {
                     this._map.layers.add(new ymaps.Layer('data:image/svg+xml,' + encodeURIComponent('<?xml version="1.0" encoding="utf-8"?><svg version="1.0" xmlns="http://www.w3.org/2000/svg" height="256" width="256"><rect x="0" y="0" width="256" height="256" fill="white" opacity="0.7"/></svg>'), { tileTransparent : true }));
 
-                    this._widths = widths;
+                    this._freqs = freqs;
                     this._routesBySegment = routes;
                     this._map.events
                         .add('boundschange', this._onBoundsChanged, this);
                     this._map.geoObjects.add(this._coll);
                     this._map.geoObjects.add(this._jcColl);
-                    this._onBoundsChanged();
+                    this._recalcWidths();
                 }, this);
             }, this);
-         },
+        },
+
+        _recalcWidths : function() {
+            var time = this._timeSettings,
+                freqs = this._freqs;
+
+            this._widths = Object.keys(freqs).reduce(function(widths, routeName) {
+                var currentDay = Object.keys(freqs[routeName]).filter(function(dow) { return dow & time.dow; }),
+                    tt = freqs[routeName][currentDay] || {},
+                    i = 0;
+
+                widths[routeName] = Object.keys(tt).reduce(function(width, hour) {
+                    if(hour >= time.from && hour <= time.to) {
+                        width += tt[hour];
+                        i++;
+                    }
+                    return width;
+                }, 0) / i;
+
+                return widths;
+            }, {});
+            this._hideAllSegments();
+            this._onBoundsChanged();
+        },
+
+        _createTimeControls : function() {
+            this._createListControl(
+                ({ 6 : 'суббота', 0 : 'воскресенье' })[(new Date()).getDay()] || 'будни',
+                {
+                    float : 'right'
+                },
+                {
+                    1 : 'будни',
+                    32 : 'суббота',
+                    64 : 'воскресенье'
+                }, function(val) {
+                    this._timeSettings.dow = +val;
+                    this._recalcWidths();
+                },
+                this
+            );
+
+            this._createListControl((new Date()).getHours() + ':00', {
+                position : {
+                    top : 45,
+                    right : 90
+                }
+            }, Array.apply([], Array(24)).reduce(function(res, _, i) {
+                res[i + 4] = (i + 4) % 24 + ':00';
+                return res;
+            }, {}), function(val) {
+                this._timeSettings.from = +val;
+                this._recalcWidths();
+            }, this);
+
+            this._createListControl(((new Date()).getHours() + 1) + ':00', {
+                position : {
+                    top : 45,
+                    right : 10
+                }
+            }, Array.apply([], Array(24)).reduce(function(res, _, i) {
+                res[i + 4] = (i + 5) % 24 + ':00';
+                return res;
+            }, {}), function(val) {
+                this._timeSettings.to = +val;
+                this._recalcWidths();
+            }, this);
+
+            this._createListControl('x1', {
+                position : {
+                    top : 80,
+                    right : 10
+                }
+            }, {
+                "0.25" : 'x0.25',
+                "0.5" : 'x0.5',
+                "1" : 'x1',
+                "2" : 'x2',
+                "3" : 'x3',
+                "5" : 'x5'
+            },
+            function(val) {
+                this._widthFactor = +val;
+                this._hideAllSegments();
+                this._onBoundsChanged();
+            }, this)
+        },
+
+        _createListControl : function(content, options, items, onItemSelected, ctx) {
+            console.log(content, options, items);
+            var control = new ymaps.control.ListBox({
+                    data: {
+                        content: content
+                    },
+                    items: Object.keys(items).map(function(itemKey) {
+                        return new ymaps.control.ListBoxItem(items[itemKey]);
+                    })
+                }),
+                createEventListener = function(i) {
+                    return function() {
+                        Object.keys(items).forEach(function(itemKey, j) {
+                            if(j != i) {
+                                control.get(j).deselect();
+                            }
+                        });
+                        control.data.set('content', items[Object.keys(items)[i]]);
+                        onItemSelected.call(ctx || this, Object.keys(items)[i]);
+                    };
+                };
+            Object.keys(items).forEach(function(itemKey, i) {
+                control.get(i).events.add('click', createEventListener(i));
+            });
+            this._map.controls.add(control, options);
+        },
 
         _hideAllSegments : function() {
             this._coll.removeAll();
@@ -142,7 +265,9 @@ ymaps.ready(function() {
            // }
             var routes = this._getRoutesForSegment(id).map(this._getRouteData, this),
                 colors = routes.map(function(r) { return r.color; }),
-                widths = routes.map(function(r) { return r.width / (zoom > 15? 0.5 : (16 - zoom)); }),
+                widths = routes.map(function(r) {
+                    return this._widthFactor * r.width / (zoom > 15? 0.5 : (16 - zoom));
+                }, this),
                 directions = routes.map(function(r) { return r.direction; });
           
             return new ymaps.Polyline(coords, {
@@ -159,7 +284,7 @@ ymaps.ready(function() {
 
         _getLineOptions : function(colors, widths, directions) {
             var styles = [null],
-                resWidths = [50],
+                resWidths = [10],
                 resColors = ['ffffff00'],
                 totalWidth = widths.reduce(function(p, c) { return p + c; }, 0),
                 shift = -totalWidth / 2;
@@ -167,9 +292,9 @@ ymaps.ready(function() {
             if(!totalWidth) {
                 return {
                     balloonContentLayout: this._getBalloonContentLayout(),
-                    strokeColor : ['ffffff00', 'ff000077'],
-                    strokeWidth : [50, 2],
-                    strokeStyle : [null, [3, 2]]
+                    strokeColor : ['ffffff00', 'ff770033'],
+                    strokeWidth : [10, 3],
+                    strokeStyle : [null, [1, 2]]
                 };
             }
 
@@ -390,7 +515,7 @@ ymaps.ready(function() {
             return {
                 color : color,
                 direction : direction,
-                width : this._widths[route] || 3
+                width : this._widths[route] || 0
             };
         },
 
