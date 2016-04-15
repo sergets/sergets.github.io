@@ -577,7 +577,7 @@ ymaps.ready(function() {
             this._hideAllSegments();
             this._onBoundsChanged();
             $('body').removeClass('route-selected');
-        }
+        },
 
         _onEditSegment : function(e) {
             var segment = $(e.target).parent('.segment'),
