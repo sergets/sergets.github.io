@@ -3,7 +3,7 @@ ymaps.ready(function() {
 
     busMap = {
         _map : new ymaps.Map('map', $.extend({
-            controls: ['zoomControl']
+            controls: ['zoomControl', 'geolocationControl']
         }, (localStorage.getItem('bounds') && !isNaN(JSON.parse(localStorage.getItem('bounds'))[0][0]))? {
             bounds : JSON.parse(localStorage.getItem('bounds'))
         } : {
