@@ -277,6 +277,9 @@ ymaps.ready(function() {
                 this._getRoutesForSegment(id).forEach(function(rt, i) {
                     if((rt == this._selectedRoute) || (rt == '<' + this._selectedRoute) || (rt == '>' + this._selectedRoute)) {
                         rts.push(i);
+                        console.log(rt, this._selectedRoute);
+                    } else {
+                        console.log('nope', rt, this._selectedRoute);
                     }
                 });
                 colors = rts.map(function(x) { return routes[x].color; });
