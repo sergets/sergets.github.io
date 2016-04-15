@@ -277,15 +277,11 @@ ymaps.ready(function() {
                 this._getRoutesForSegment(id).forEach(function(rt, i) {
                     if((rt == this._selectedRoute) || (rt == '<' + this._selectedRoute) || (rt == '>' + this._selectedRoute)) {
                         rts.push(i);
-                        console.log(rt, this._selectedRoute);
-                    } else {
-                        console.log('nope', rt, this._selectedRoute);
                     }
-                });
+                }, this);
                 colors = rts.map(function(x) { return routes[x].color; });
                 widths = rts.map(function(x) { return 10; });
                 directions = rts.map(function(x) { return routes[x].direction; });
-                console.log(this._getRoutesForSegment(id),rts,colors,widths);
             } else {
                 colors = routes.map(function(r) { return r.color; });
                 widths = routes.map(function(r) {
