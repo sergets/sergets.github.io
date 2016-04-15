@@ -17,6 +17,8 @@ ymaps.ready(function() {
             to : (new Date()).getHours()
         },
 
+        _selectedRoute : false,
+
         _loadCache : {},
 
         _coll : new ymaps.GeoObjectCollection(),
@@ -93,6 +95,9 @@ ymaps.ready(function() {
                     this._recalcWidths();
                 }, this);
             }, this);
+            $(document)
+                .on('click', '.segment .route', this._onSelectRoute.bind(this));
+
         },
 
         _recalcWidths : function() {
@@ -231,12 +236,12 @@ ymaps.ready(function() {
                         this._addSegment(id, segments[id]);
                     }, this);
 
-                Object.keys(this._junctions).forEach(function(key) {
+                /*Object.keys(this._junctions).forEach(function(key) {
                     //if(this._junctions[key] && this._junctions[key].length) {
                         var jc = this._createJunction(key.split(','));
                         jc && this._jcColl.add(jc);
                     //}
-                }, this);
+                }, this);*/
             }, this);
         },
 
@@ -263,12 +268,25 @@ ymaps.ready(function() {
            //     coords = coords.reverse();
                 //reverse = -1;
            // }
+            
+
             var routes = this._getRoutesForSegment(id).map(this._getRouteData, this),
-                colors = routes.map(function(r) { return r.color; }),
+                colors = [], widths = [], directions = [];
+
+            if(this._selectedRoute) {
+                var iocr = this._getRoutesForSegment(id).indexOf(this._selectedRoute);
+                if(iocr != -1) {
+                    colors = [routes[iocr].color];
+                    widths = [10];
+                    directions = [routes[iocr].direction];
+                }
+            } else {
+                colors = routes.map(function(r) { return r.color; });
                 widths = routes.map(function(r) {
                     return this._widthFactor * r.width / (zoom > 15? 0.5 : (16 - zoom));
-                }, this),
+                }, this);
                 directions = routes.map(function(r) { return r.direction; });
+            }
           
             return new ymaps.Polyline(coords, {
                 id: id
@@ -541,6 +559,10 @@ ymaps.ready(function() {
                 this._showSegmentsByIds(res.length < 4500? res : []);
             }, this);
             bounds[0][0] && localStorage.setItem('bounds', JSON.stringify(bounds));
+        },
+
+        _onSelectRoute : function(e) {
+            alert($(e.target).html());
         },
 
         _onEditSegment : function(e) {
