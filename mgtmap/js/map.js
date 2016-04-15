@@ -562,7 +562,10 @@ ymaps.ready(function() {
         },
 
         _onSelectRoute : function(e) {
-            alert($(e.target).html());
+            var route = $(e.target).html();
+            this._selectedRoute = route;
+            this._hideAllSegments();
+            this._onBoundsChanged();
         },
 
         _onEditSegment : function(e) {
