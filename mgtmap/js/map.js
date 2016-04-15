@@ -96,8 +96,8 @@ ymaps.ready(function() {
                 }, this);
             }, this);
             $(document)
-                .on('click', '.segment .route', this._onSelectRoute.bind(this));
-
+                .on('click', '.segment .route', this._onSelectRoute.bind(this))
+                .on('click', '.current-route', this._onDeselectRoute.bind(this));
         },
 
         _recalcWidths : function() {
@@ -187,7 +187,6 @@ ymaps.ready(function() {
         },
 
         _createListControl : function(content, options, items, onItemSelected, ctx) {
-            console.log(content, options, items);
             var control = new ymaps.control.ListBox({
                     data: {
                         content: content
@@ -274,12 +273,15 @@ ymaps.ready(function() {
                 colors = [], widths = [], directions = [];
 
             if(this._selectedRoute) {
-                var iocr = this._getRoutesForSegment(id).indexOf(this._selectedRoute);
-                if(iocr != -1) {
-                    colors = [routes[iocr].color];
-                    widths = [10];
-                    directions = [routes[iocr].direction];
-                }
+                var rts = [];
+                this._getRoutesForSegment(id).forEach(function(rt, i) {
+                    if(rt == this._selectedRoute || rt == '<' + this._selectedRoute || rt == '>' + this._selectedRoute) {
+                        rts.push(i);
+                    }
+                });
+                colors = rts.map(function(x) { return routes[x].color; });
+                widths = rts.map(function(x) { return 10; });
+                directions = rts.map(function(x) { return routes[x].direction; });
             } else {
                 colors = routes.map(function(r) { return r.color; });
                 widths = routes.map(function(r) {
@@ -566,7 +568,16 @@ ymaps.ready(function() {
             this._selectedRoute = route;
             this._hideAllSegments();
             this._onBoundsChanged();
+            $('body').addClass('route-selected');
+            $('.current-route').css('background', getBusColor(route)).html(route);
         },
+        
+        _onDeselectRoute : function() {
+            this._selectedRoute = false;
+            this._hideAllSegments();
+            this._onBoundsChanged();
+            $('body').removeClass('route-selected');
+        }
 
         _onEditSegment : function(e) {
             var segment = $(e.target).parent('.segment'),
@@ -622,7 +633,7 @@ ymaps.ready(function() {
                     },
                     dataType : 'json',
                     error : function(req, st, e) {
-                      alert('error on' + file + ': ' + e.message);
+                      alert('error on ' + file + ': ' + e.message);
                     },
                     context : this
                 });
