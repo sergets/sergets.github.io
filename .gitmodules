@@ -1,4 +1,4 @@
 [submodule "mgtmap"]
 	path = mgtmap
-	url = git://github.com/sergets/mgtmap
+	url = https://github.com/sergets/mgtmap
 	branch = master
