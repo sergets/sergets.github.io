@@ -4,7 +4,8 @@ script:
   - git config user.email "sergets@ya.ru"
   - git config user.name "self-driving Serge Ts"
   - git config remote.origin.url `git config remote.origin.url | sed "s/github.com/sergets:$GITHUB_KEY@github.com/"`
+  - git checkout master
   - git submodule foreach git pull origin master
   - git add .
   - git commit -m 'Automatically up submodules'
-  - git push origin master
+  - git push
