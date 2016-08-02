@@ -1,0 +1,7 @@
+language: nodejs
+
+script:
+  - git submodule foreach git pull origin master
+  - git add .
+  - git commit -m 'Automatically up submodules'
+  - git push
