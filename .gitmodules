@@ -2,3 +2,7 @@
 	path = mgtmap
 	url = https://github.com/sergets/mgtmap
 	branch = master
+[submodule "sldpt"]
+	path = sldpt
+	url = https://github.com/sergets/sldpt
+	branch = master
