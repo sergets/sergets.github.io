@@ -9,3 +9,4 @@
 [submodule "mgtmap-gp-troll"]
 	path = mgtmap-gp-troll
 	url = https://github.com/sergets/mgtmap
+	branch = gp-2
