@@ -6,3 +6,6 @@
 	path = sldpt
 	url = https://github.com/sergets/sldpt
 	branch = master
+[submodule "mgtmap-gp-troll"]
+	path = mgtmap-gp-troll
+	url = https://github.com/sergets/mgtmap
