@@ -5,6 +5,6 @@ script:
   - git config user.name "self-driving Serge Ts"
   - git config remote.origin.url `git config remote.origin.url | sed "s/github.com/sergets:$GITHUB_KEY@github.com/"`
   - git checkout master
-  - git submodule foreach git pull
+  - git submodule update --remote
   - git add .
   - git commit -m 'Automatically up submodules' && git push || true
