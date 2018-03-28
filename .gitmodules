@@ -1,7 +1,3 @@
-[submodule "mgtmap"]
-	path = mgtmap-checkout
-	url = https://github.com/sergets/mgtmap
-	branch = master
 [submodule "sldpt"]
 	path = sldpt
 	url = https://github.com/sergets/sldpt
@@ -10,3 +6,7 @@
 	path = mgtmap-gp-troll
 	url = https://github.com/sergets/mgtmap
 	branch = gp-2
+[submodule "mgtmap-checkout"]
+	path = mgtmap-checkout
+	url = http://github.com/sergets/mgtmap
+	branch = master
