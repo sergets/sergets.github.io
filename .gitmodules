@@ -6,3 +6,7 @@
 	path = mgtmap-gp-troll
 	url = https://github.com/sergets/mgtmap
 	branch = gp-2
+[submodule "mgtmap-checkout"]
+	path = mgtmap-checkout
+	url = https://github.com/sergets/mgtmap
+	branch = master
