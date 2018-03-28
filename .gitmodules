@@ -1,5 +1,5 @@
 [submodule "mgtmap"]
-	path = mgtmap
+	path = mgtmap-checkout
 	url = https://github.com/sergets/mgtmap
 	branch = master
 [submodule "sldpt"]
