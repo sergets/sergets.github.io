@@ -9,7 +9,7 @@ script:
   - cd mgtmap-checkout
   - npm install yarn
   - make deploy
-  - cp -r deploy ../mgtmap
+  - mv deploy ../mgtmap
   - cd ..
   - git add . 
   - git commit -m 'Automatically up submodules' && git push || true
