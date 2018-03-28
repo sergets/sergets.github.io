@@ -9,6 +9,7 @@ script:
   - cd mgtmap-checkout
   - npm install yarn
   - make deploy
+  - rm -r ../mgtmap
   - mv deploy ../mgtmap
   - cd ..
   - git add . 
