@@ -2,7 +2,7 @@ language: nodejs
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y sudo apt-get install libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
+  - sudo apt-get install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
 
 script:
   - git config user.email "sergets@ya.ru"
