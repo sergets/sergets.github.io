@@ -1,5 +1,9 @@
 language: nodejs
 
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y sudo apt-get install libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
+
 script:
   - git config user.email "sergets@ya.ru"
   - git config user.name "self-driving Serge Ts"
@@ -13,4 +17,4 @@ script:
   - mv deploy ../mgtmap
   - cd ..
   - git add . 
-  - git commit -m 'Automatically up submodules' && git push || true
+  - git commit -m 'Automatically up submodules & deploy mgtmap' && git push || true
