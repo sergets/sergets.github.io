@@ -16,5 +16,11 @@ script:
   - rm -r ../mgtmap
   - mv deploy ../mgtmap
   - cd ..
+  - cd mgtmap-gp-troll
+  - npm install yarn
+  - make deploy
+  - rm -r ../mgtmap-gp
+  - mv deploy ../mgtmap-gp
+  - cd ..
   - git add . 
   - git commit -m 'Automatically up submodules & deploy mgtmap' && git push || true
