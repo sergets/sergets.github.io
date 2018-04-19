@@ -1,4 +1,7 @@
-language: nodejs
+language: node_js
+
+node_js:
+  - "node"
 
 before_install:
   - sudo apt-get -qq update
@@ -11,7 +14,7 @@ script:
   - git checkout master
   - git submodule update --remote
   - cd mgtmap-checkout
-  - npm install yarn
+  - npm install -g yarn
   - make deploy
   - rm -r ../mgtmap
   - mv deploy ../mgtmap
