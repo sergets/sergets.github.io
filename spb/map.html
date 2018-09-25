@@ -153,7 +153,7 @@
 		        }),
 		    	coll = new ymaps.GeoObjectCollection();
 
-	    	myMap.layers.add(new ymaps.Layer('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect x="0" y="0" width="256" height="256" fill="rgba(255, 255, 255, 0.7)"/></svg>'));
+	    	myMap.layers.add(new ymaps.Layer('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect x="0" y="0" width="256" height="256" fill="rgba(255, 255, 255, 0.7)"/></svg>', { tileTransparent: true }));
 
 	   		Promise.all([
     			fetch('./rgam-spb.json').then(function(res) { return res.json() }),
@@ -179,14 +179,54 @@
 	    				return sortedData;
     				}, []).sort((a, b) => a.width - b.width);
 
-				sortedData.forEach(val => {
-					val.forward && coll.add(new ymaps.Polyline(val.forward, { balloonContent: val.number }, { strokeColor: getColor(val.number), strokeOpacity: val.width / 800, strokeWidth: 3 }));
-    				val.backward && coll.add(new ymaps.Polyline(val.backward, { balloonContent: val.number }, { strokeColor: getColor(val.number), strokeOpacity: val.width / 800, strokeWidth: 3 }));
+				sortedData.forEach((val, i) => {
+					[val.forward, val.backward].filter(Boolean).forEach(line => {
+						var polyline = new ymaps.Polyline(
+							line,
+							{
+								balloonContent: val.number,
+								color: getColor(val.number),
+								opacity: val.width / 800,
+								zIndex: 40 + i * 2
+							}, {
+						 		strokeColor: getColor(val.number),
+						 		strokeOpacity: val.width / 800,
+						 		strokeWidth: 3,
+						 		zIndex: 40 + i * 2
+						 	}
+					 	);
+
+						polyline.events.add('balloonopen', onPolylineBalloonOpen);
+						polyline.events.add('balloonclose', onPolylineBalloonClose);
+						coll.add(polyline);
+					});
 				});
 
 				myMap.geoObjects.add(coll);
 			});
 		});
+
+		function onPolylineBalloonOpen(e) {
+			var target = e.get('target');
+
+			target.options.set({
+				strokeWidth: [15, 10],
+				strokeColor: ['ffff', target.properties.get('color')],
+				strokeOpacity: 1,
+				zIndex: 9000
+			});
+		}
+
+		function onPolylineBalloonClose(e) {
+			var target = e.get('target');
+
+			target.options.set({
+				strokeWidth: 3,
+				strokeColor: target.properties.get('color'),
+				strokeOpacity: target.properties.get('opacity'),
+				zIndex: target.properties.get('zIndex')
+			});
+		}
     </script>
 	<style>
         html, body, #map {
