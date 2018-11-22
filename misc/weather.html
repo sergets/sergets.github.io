@@ -24,6 +24,12 @@
 				overflow: hidden;
 			}
 
+			.cover__scroll {
+				margin-top: 20px;
+				height: 126px;
+				overflow: hidden;
+			}
+
 			.location {
 				margin-top: 10px;
 				text-align: center;
@@ -32,7 +38,7 @@
 			.location__subtitle {
 				margin-top: 4px;
 				font-size: 14px;
-				opacity: .8;
+				opacity: 0.8;
 			}
 
 			.fact {
@@ -51,7 +57,6 @@
 			}
 
 			.fact-info {
-				margin-top: 20px;
 				padding: 0 14px;
 				float: left;
 				height: 126px;
@@ -70,10 +75,10 @@
 			}
 
 			.hourly {
-				margin-top: 20px;
-				padding: 0 14px;
+				padding: 0 4px 0 14px;
 				height: 126px;
 				overflow: hidden;
+				text-align: center;
 			}
 
 			.hourly__hour {
@@ -83,19 +88,31 @@
 
 			.hourly__hour-title {
 				font-size: 14px;
+				opacity: 0.8;
 			}
 
 			.hourly-link {
-				margin-top: 20px;
+				padding-top: 45px;
 				margin-right: 14px;
-				font-size: 48px;
-				height: 126px;
+				height: 106px;
+				width: 60px;
 				float: right;
 				color: #fff;
 				text-decoration: none;
-				line-height: 126px;
+				text-align: center;
 			}
 
+			.hourly-link__icon {
+				font-size: 32px;
+				font-weight: bold;
+				width: 100%;
+				text-align: center;
+			}
+
+			.hourly-link__title {
+				opacity: 0.8;
+				font-size: 14px;
+			}
 		</style>
 	</head>
 	<body class="page">
@@ -113,44 +130,52 @@
 			</div>
 			<div class="fact__condition">Облачно с прояснениями</div>
 			<div class="fact__condition">Ощущается как +15°</div>
-			<div class="fact-info">
-				<div class="fact-info__line"><img class="fact-info__icon" src="wind-speed.svg" width="20" height="20"> 4,5 м/с, СЗ</div>
-				<div class="fact-info__line"><img class="fact-info__icon" src="pressure.svg" width="20" height="20"> 753 мм рт. ст.</div>
-				<div class="fact-info__line"><img class="fact-info__icon" src="humidity.svg" width="20" height="20"> 76%</div>
-			</div>
-			<a href="https://p.ya.ru/" class="hourly-link">
-				»
-			</a>
-			<div class="hourly">
-				<div class="hourly__hour">
-					<div class="hourly__line hourly__hour-title">14:00</div>
-					<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/bkn_n.png" width="32" height="32"></div>
-					<div class="hourly__line">+15°</div>
+			<div class="cover__scroll">
+				<div class="fact-info">
+					<div class="fact-info__line"><img class="fact-info__icon" src="wind-speed.png" width="20" height="20"> 4,5 м/с, СЗ</div>
+					<div class="fact-info__line"><img class="fact-info__icon" src="pressure.png" width="20" height="20"> 753 мм рт. ст.</div>
+					<div class="fact-info__line"><img class="fact-info__icon" src="humidity.png" width="20" height="20"> 76%</div>
 				</div>
-				<div class="hourly__hour">
-					<div class="hourly__line hourly__hour-title">15:00</div>
-					<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/bkn_d.png" width="32" height="32"></div>
-					<div class="hourly__line">+18°</div>
-				</div>
-				<div class="hourly__hour">
-					<div class="hourly__line hourly__hour-title">16:00</div>
-					<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/ovc.png" width="32" height="32"></div>
-					<div class="hourly__line">+15°</div>
-				</div>
-				<div class="hourly__hour">
-					<div class="hourly__line hourly__hour-title">17:00</div>
-					<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/ovc.png" width="32" height="32"></div>
-					<div class="hourly__line">+18°</div>
-				</div>
-				<div class="hourly__hour">
-					<div class="hourly__line hourly__hour-title">18:00</div>
-					<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/ovc.png" width="32" height="32"></div>
-					<div class="hourly__line">+18°</div>
-				</div>
-				<div class="hourly__hour">
-					<div class="hourly__line hourly__hour-title">19:00</div>
-					<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/ovc.png" width="32" height="32"></div>
-					<div class="hourly__line">+18°</div>
+				<a href="https://p.ya.ru/" class="hourly-link">
+					<div class="hourly-link__icon">&rsaquo;</div>
+					<div class="hourly-link__title">Прогноз по&nbsp;часам</div>
+				</a>
+				<div class="hourly">
+					<div class="hourly__hour">
+						<div class="hourly__line hourly__hour-title">14:00</div>
+						<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/bkn_n.png" width="32" height="32"></div>
+						<div class="hourly__line">+15°</div>
+					</div>
+					<div class="hourly__hour">
+						<div class="hourly__line hourly__hour-title">15:00</div>
+						<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/bkn_d.png" width="32" height="32"></div>
+						<div class="hourly__line">+18°</div>
+					</div>
+					<div class="hourly__hour">
+						<div class="hourly__line hourly__hour-title">16:00</div>
+						<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/ovc.png" width="32" height="32"></div>
+						<div class="hourly__line">+15°</div>
+					</div>
+					<div class="hourly__hour">
+						<div class="hourly__line hourly__hour-title">17:00</div>
+						<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/ovc.png" width="32" height="32"></div>
+						<div class="hourly__line">+18°</div>
+					</div>
+					<div class="hourly__hour">
+						<div class="hourly__line hourly__hour-title">18:00</div>
+						<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/ovc.png" width="32" height="32"></div>
+						<div class="hourly__line">+18°</div>
+					</div>
+					<div class="hourly__hour">
+						<div class="hourly__line hourly__hour-title">19:00</div>
+						<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/ovc.png" width="32" height="32"></div>
+						<div class="hourly__line">+18°</div>
+					</div>
+					<div class="hourly__hour">
+						<div class="hourly__line hourly__hour-title">20:00</div>
+						<div class="hourly__line"><img class="weather-icon" src="https://yastatic.net/weather/i/icons/funky/png/flat/32/ovc.png" width="32" height="32"></div>
+						<div class="hourly__line">+18°</div>
+					</div>
 				</div>
 			</div>
 		</div>
