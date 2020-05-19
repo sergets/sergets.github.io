@@ -561,7 +561,7 @@
         document.addEventListener(event, function(e) {
 
         var target = e.target;
-        while (target && !target.getAttribute('class') || !target.getAttribute('class').startsWith('key') && e !== document.documentElement) {
+        while (target && (!target.getAttribute('class') || !target.getAttribute('class').startsWith('key') && target !== document.documentElement)) {
           target = target.parentElement;
         }
 
