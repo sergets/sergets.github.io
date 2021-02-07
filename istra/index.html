@@ -1,0 +1,199 @@
+<html>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://unpkg.com/l-helper/l.min.js"></script>
+	<style>
+		body {
+			--shf: 4.9406564584124654e-322;
+		}
+
+		.graph {
+			height: 80px;
+			box-shadow: 0 0 3px 1px rgba(0, 0, 0, .3);
+			border-radius: 3px;
+			margin: 10px;
+			white-space: nowrap;
+			overflow-x: scroll;
+			overflow-y: hidden;
+			text-align: right;
+			padding: 20px 0;
+		}
+
+		.graph__inner {
+			float: left;
+			display: inline-block;
+			position: relative;
+			height: 100%;
+			position: relative;
+			margin-right: 80px;
+		}
+
+		.graph__final {
+			display: inline-block;
+		}
+
+		.graph__line {
+			width: 100%;
+			height: 0;
+			position: absolute;
+			top: calc(100% * (var(--max) - var(--val)) / (var(--max) - var(--min)));
+			opacity: .3;
+			border-top: 1px solid rgb(calc(128 + (var(--val) - 6) * (var(--val) - 6) * (var(--val) - 6) * 0.055), 170, calc(128 - (var(--val) - 6) * (var(--val) - 6) * (var(--val) - 6) * 0.055));
+		}
+
+		.graph__line::after {
+			position: fixed;
+			left: 25px;
+			padding: 2px;
+			background: #fff;
+			font-family: sans-serif;
+			content: var(--txt);
+			color: 1px solid rgb(calc(128 + (var(--val) - 6) * (var(--val) - 6) * (var(--val) - 6) * 0.055), 170, calc(128 - (var(--val) - 6) * (var(--val) - 6) * (var(--val) - 6) * 0.055));
+			margin-top: -10px;
+			font-size: 10px;
+			line-height: 14px;
+			text-align: left;
+		}
+
+		.graph b {
+			font-weight: normal;
+			width: 2px;
+			font-size: 10px;
+			line-height: 14px;
+			font-family: sans-serif;
+			display: inline-block;
+			height: 100%;
+		}
+
+		.graph b::before {
+			height: 4px;
+			width: 2px;
+			margin-top: -2px;
+			content: '';
+			position: absolute;
+			top: calc(100% * (var(--max) - var(--val)) / (var(--max) - var(--min)));
+			background-color: rgb(calc(128 + (var(--val) - 6) * (var(--val) - 6) * (var(--val) - 6) * 0.055), 170, calc(128 - (var(--val) - 6) * (var(--val) - 10) * (var(--val) - 10) * 0.055));
+		}
+
+		.graph b.min::after,
+		.graph b.max::after,
+		.graph b:hover::after,
+		.graph b:last-child::after
+		 {
+			color: rgb(calc(128 + (var(--val) - 6) * (var(--val) - 6) * (var(--val) - 6) * 0.055), 170, calc(128 - (var(--val) - 6) * (var(--val) - 6) * (var(--val) - 6) * 0.055));
+			position: absolute;
+			top: calc(100% * (var(--max) - var(--val)) / (var(--max) - var(--min)));
+			text-align: center;
+			width: 60px;
+			margin-left: -30px;
+			font-size: 10px;
+			line-height: 14px;
+			font-family: sans-serif;
+			content: var(--txt);
+		}
+
+		.graph b.min:after {
+			margin-top: 4px;
+		}
+
+		.graph b.max:after {
+			margin-top: -14px;
+		}
+
+		.graph b:hover::after {
+			margin-top: -18px;
+			font-size: 16px;
+		}
+
+		.graph b:last-child::after {
+			text-align: left;
+			margin-left: 10px;
+			margin-top: -10px;
+			font-size: 30px;
+			line-height: 20px;
+			text-align: left;
+		}
+
+		.graph b.time {
+			border-left: 1px dotted #eee;
+			color: #ddd;
+		}
+
+		.graph b.time:after {
+			content: var(--t);
+			position: absolute;
+		}
+	</style>
+
+	<body>
+	<script>
+		const STEP_SIZE = 60 * 1000;
+		const NEIGHBORS_COUNT = 40;
+		const INTERVALS = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100];
+		const WANT_LINES = 4;
+		const MIN_RANGE = 4;
+
+		fetch('//istrahome.herokuapp.com/t').then(res => res.json()).then(({ts, t}) => {
+			let time = ts * 1000 - t.reduce((length, x) => length + (x[1] || 1), 0) * STEP_SIZE;
+			// t = t.slice(t.length - 200, t.length);
+
+			let [min, max, res] = t.reduce(([min, max, res], e, i) => {
+				const neighbors = t.slice(Math.max(i - NEIGHBORS_COUNT, 0), Math.min(i + NEIGHBORS_COUNT, t.length));
+				const [localMin, localMax] = [Math.min, Math.max].map(f => f.apply(Math, neighbors.map(v => v[0] || v)));
+				const v = e[0] || e;
+				const n = e[1] || 1;
+
+				let isLocalMin, isLocalMax;
+				if (localMax - localMin > 2) {
+					if (v === localMin || v == localMax) {
+						if (!neighbors.slice(NEIGHBORS_COUNT + 1).some(n => (n[0] || n) === v)) {
+							isLocalMax = v === localMax;
+							isLocalMin = v === localMin;
+						}
+					}
+				}
+
+				res.push.apply(res, Array.apply([], Array(e[1])).map((_, i) => L('b', {
+					...(
+						(new Date(time + STEP_SIZE)).toTimeString().substr(3, 2) === '00' ? { class: 'time' } :
+						!i && (
+							isLocalMin ? { class: 'min' } :
+							isLocalMax ? { class: 'max' } :
+							false
+						)
+					),
+					style: `--val: ${v}; --txt: '${v}'; --t: '${(new Date(time += STEP_SIZE)).toTimeString().substr(0, 5)}'`
+				})));
+				return [Math.min(min, v), Math.max(max, v), res];
+			}, [Infinity, -Infinity, []]);
+
+			if (max - min < MIN_RANGE) {
+				max = (max + min + MIN_RANGE) / 2;
+				min = (max + min - MIN_RANGE) / 2;
+			}
+
+			let delta = 1000;
+
+			const interval = INTERVALS[Math.round(3 * Math.log((max - min) / WANT_LINES) / Math.log(10)) + 3];
+			const lowerLine = Math.floor(min / interval);
+			const lines = Array.apply([], Array(Math.ceil(max / interval) - lowerLine + 1)).map((_, i) => (lowerLine + i) * interval);
+
+			lines.map(l => L('div', { class: 'graph__line', style: `--val: ${l} --txt: '${l}'` }));
+
+			let q;
+			document.body.appendChild(L('div', { class: 'graph' }, [
+				L('div', {
+					class: 'graph__inner',
+					style: `--max: ${max}; --min: ${min}`
+				}, [
+					...lines.map(l => L('div', { class: 'graph__line', style: `--val: ${l}; --txt: '${l}'` })),
+					...res
+				]),
+				q = L('div', { class: 'graph__final' })
+			]));
+
+			q.scrollIntoView(true);
+		});
+	</script>
+
+	</body>
+</html>
