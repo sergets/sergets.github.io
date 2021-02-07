@@ -3,7 +3,7 @@
 	<script src="https://unpkg.com/l-helper/l.min.js"></script>
 	<style>
 		body {
-			--shf: 4.9406564584124654e-322;
+			background: #559472;
 		}
 
 		.graph {
@@ -16,6 +16,7 @@
 			overflow-y: hidden;
 			text-align: right;
 			padding: 20px 0;
+			background: #fff;
 		}
 
 		.graph__inner {
@@ -132,15 +133,14 @@
 		const WANT_LINES = 4;
 		const MIN_RANGE = 4;
 
-		fetch('//istrahome.herokuapp.com/t').then(res => res.json()).then(({ts, t}) => {
-			let time = ts * 1000 - t.reduce((length, x) => length + (x[1] || 1), 0) * STEP_SIZE;
+		function makeGraph(t, ts, stepSize) {
+			let time = ts * 1000 - t.reduce((length, x) => length + (Array.isArray(x) ? x[1] : 1), 0) * stepSize;
 			// t = t.slice(t.length - 200, t.length);
 
 			let [min, max, res] = t.reduce(([min, max, res], e, i) => {
 				const neighbors = t.slice(Math.max(i - NEIGHBORS_COUNT, 0), Math.min(i + NEIGHBORS_COUNT, t.length));
-				const [localMin, localMax] = [Math.min, Math.max].map(f => f.apply(Math, neighbors.map(v => v[0] || v)));
-				const v = e[0] || e;
-				const n = e[1] || 1;
+				const [localMin, localMax] = [Math.min, Math.max].map(f => f.apply(Math, neighbors.map(v => Array.isArray(v) ? v[0] : v).filter(v => v === Number(v))));
+				const v = Array.isArray(e) ? e[0] : e;
 
 				let isLocalMin, isLocalMax;
 				if (localMax - localMin > 2) {
@@ -152,24 +152,27 @@
 					}
 				}
 
-				res.push.apply(res, Array.apply([], Array(e[1])).map((_, i) => L('b', {
+				res.push.apply(res, Array.apply([], Array(Array.isArray(e) ? e[1] : 1)).map((_, i) => L('b', {
 					...(
-						(new Date(time + STEP_SIZE)).toTimeString().substr(3, 2) === '00' ? { class: 'time' } :
+						(new Date(time + stepSize)).toTimeString().substr(3, 2) === '00' ? { class: 'time' } :
 						!i && (
 							isLocalMin ? { class: 'min' } :
 							isLocalMax ? { class: 'max' } :
 							false
 						)
 					),
-					style: `--val: ${v}; --txt: '${v}'; --t: '${(new Date(time += STEP_SIZE)).toTimeString().substr(0, 5)}'`
+					style: `--val: ${v}; --txt: '${v}'; --t: '${(new Date(time += stepSize)).toTimeString().substr(0, 5)}'`
 				})));
-				return [Math.min(min, v), Math.max(max, v), res];
+
+				return v === Number(v) ? [Math.min(min, v), Math.max(max, v), res] : [min, max, res];
 			}, [Infinity, -Infinity, []]);
 
 			if (max - min < MIN_RANGE) {
 				max = (max + min + MIN_RANGE) / 2;
 				min = (max + min - MIN_RANGE) / 2;
 			}
+
+			console.log(min, max);
 
 			let delta = 1000;
 
@@ -179,15 +182,19 @@
 
 			lines.map(l => L('div', { class: 'graph__line', style: `--val: ${l} --txt: '${l}'` }));
 
+			return L('div', {
+				class: 'graph__inner',
+				style: `--max: ${max}; --min: ${min}`
+			}, [
+				...lines.map(l => L('div', { class: 'graph__line', style: `--val: ${l}; --txt: '${l}'` })),
+				...res
+			]);
+		}
+
+		fetch('//istrahome.herokuapp.com/t').then(res => res.json()).then(({ts, t}) => {
 			let q;
 			document.body.appendChild(L('div', { class: 'graph' }, [
-				L('div', {
-					class: 'graph__inner',
-					style: `--max: ${max}; --min: ${min}`
-				}, [
-					...lines.map(l => L('div', { class: 'graph__line', style: `--val: ${l}; --txt: '${l}'` })),
-					...res
-				]),
+				makeGraph(t, ts, STEP_SIZE),
 				q = L('div', { class: 'graph__final' })
 			]));
 
