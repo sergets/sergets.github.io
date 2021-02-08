@@ -48,7 +48,7 @@
 			background: #fff;
 			font-family: sans-serif;
 			content: var(--txt);
-			color: 1px solid rgb(calc(128 + (var(--val) - 6) * (var(--val) - 6) * (var(--val) - 6) * 0.055), 170, calc(128 - (var(--val) - 6) * (var(--val) - 6) * (var(--val) - 6) * 0.055));
+			color: rgb(calc(128 + (var(--val) - 6) * (var(--val) - 6) * (var(--val) - 6) * 0.055), 170, calc(128 - (var(--val) - 6) * (var(--val) - 6) * (var(--val) - 6) * 0.055));
 			margin-top: -10px;
 			font-size: 10px;
 			line-height: 14px;
@@ -116,11 +116,15 @@
 
 		.graph b.time {
 			border-left: 1px dotted #eee;
-			color: #ddd;
+			height: calc(100% + 40px);
+			margin-top: -20px;
+			color: #000;
 		}
 
 		.graph b.time:after {
 			content: var(--t);
+			background: #fff;
+			opacity: .2;
 			position: absolute;
 		}
 	</style>
@@ -145,7 +149,7 @@
 				let isLocalMin, isLocalMax;
 				if (localMax - localMin > 2) {
 					if (v === localMin || v == localMax) {
-						if (!neighbors.slice(NEIGHBORS_COUNT + 1).some(n => (n[0] || n) === v)) {
+						if (!neighbors.slice(NEIGHBORS_COUNT + 1).some(n => (Array.isArray(n) ? n[0] : n) === v)) {
 							isLocalMax = v === localMax;
 							isLocalMin = v === localMin;
 						}
