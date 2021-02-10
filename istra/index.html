@@ -28,10 +28,6 @@
 			margin-right: 80px;
 		}
 
-		.graph__final {
-			display: inline-block;
-		}
-
 		.graph__line {
 			width: 100%;
 			height: 0;
@@ -176,8 +172,6 @@
 				min = (max + min - MIN_RANGE) / 2;
 			}
 
-			console.log(min, max);
-
 			let delta = 1000;
 
 			const interval = INTERVALS[Math.round(3 * Math.log((max - min) / WANT_LINES) / Math.log(10)) + 3];
@@ -196,13 +190,10 @@
 		}
 
 		fetch('//istrahome.herokuapp.com/t').then(res => res.json()).then(({ts, t}) => {
-			let q;
-			document.body.appendChild(L('div', { class: 'graph' }, [
-				makeGraph(t, ts, STEP_SIZE),
-				q = L('div', { class: 'graph__final' })
-			]));
+			let g = L('div', { class: 'graph' }, makeGraph(t, ts, STEP_SIZE));
 
-			q.scrollIntoView(true);
+			document.body.appendChild(g);
+			g.scrollTo(1e7, 0);
 		});
 	</script>
 
