@@ -189,9 +189,9 @@
 		}
 
 		fetch('//istrahome.herokuapp.com/d').then(res => res.json()).then(({ts, delta, t, v}) => {
-			let t = L('div', { class: 'graph' }, makeGraph(t, ts, delta));
-			document.body.appendChild(t);
-			t.scrollTo(1e7, 0);
+			let g = L('div', { class: 'graph' }, makeGraph(t, ts, delta));
+			document.body.appendChild(g);
+			g.scrollTo(1e7, 0);
 		});
 	</script>
 
