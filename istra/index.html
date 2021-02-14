@@ -127,14 +127,13 @@
 
 	<body>
 	<script>
-		const STEP_SIZE = 60 * 1000;
 		const NEIGHBORS_COUNT = 40;
 		const INTERVALS = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100];
 		const WANT_LINES = 4;
 		const MIN_RANGE = 4;
 
 		function makeGraph(t, ts, stepSize) {
-			let time = ts * 1000 - t.reduce((length, x) => length + (Array.isArray(x) ? x[1] : 1), 0) * stepSize;
+			let time = ts * 1000;
 			// t = t.slice(t.length - 200, t.length);
 
 			let [min, max, res] = t.reduce(([min, max, res], e, i) => {
@@ -189,11 +188,10 @@
 			]);
 		}
 
-		fetch('//istrahome.herokuapp.com/t').then(res => res.json()).then(({ts, t}) => {
-			let g = L('div', { class: 'graph' }, makeGraph(t, ts, STEP_SIZE));
-
-			document.body.appendChild(g);
-			g.scrollTo(1e7, 0);
+		fetch('//istrahome.herokuapp.com/d').then(res => res.json()).then(({ts, delta, t, v}) => {
+			let t = L('div', { class: 'graph' }, makeGraph(t, ts, delta));
+			document.body.appendChild(t);
+			t.scrollTo(1e7, 0);
 		});
 	</script>
 
