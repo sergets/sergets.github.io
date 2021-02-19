@@ -188,8 +188,12 @@
 			]);
 		}
 
-		fetch('//istrahome.herokuapp.com/d').then(res => res.json()).then(({ts, delta, t, v}) => {
+		fetch('//istrahome.herokuapp.com/d').then(res => res.json()).then(({ts, delta, t, v, h}) => {
 			let g = L('div', { class: 'graph' }, makeGraph(t, ts, delta));
+			document.body.appendChild(g);
+			g.scrollTo(1e7, 0);
+			
+			g = L('div', { class: 'graph' }, makeGraph(h, ts, delta));
 			document.body.appendChild(g);
 			g.scrollTo(1e7, 0);
 		});
