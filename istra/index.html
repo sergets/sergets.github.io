@@ -188,7 +188,7 @@
 			]);
 		}
 
-		fetch('//istrahome.herokuapp.com/d' + (location.hash.length > 1 ? ('/' + location.hash.substr(1)) : '')).then(res => res.json()).then(({ts, delta, t, v, h}) => {
+		fetch('http://api.sergets.ru/d' + (location.hash.length > 1 ? ('/' + location.hash.substr(1)) : '')).then(res => res.json()).then(({ts, delta, t, v, h}) => {
 			let g = L('div', { class: 'graph' }, makeGraph(t, ts, delta));
 			document.body.appendChild(g);
 			g.scrollTo(1e7, 0);
