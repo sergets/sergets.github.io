@@ -29,27 +29,6 @@
 				Object.keys(attrs).forEach(attr => el.setAttribute(attr, attrs[attr]));
 				document.head.appendChild(el);
 			}
-	
-			if (hasLL || gid) {
-				tag('link', {
-					rel: 'preload',
-					as: 'image',
-					href: '/weather/api/static-map?soyuz=1&' + 
-						(lon && lat ? 'lon=' + lon + '&lat=' + lat : gid ? 'geoId=' + gid : '') +
-						'&w=' + window.innerWidth + '&h=' + window.innerHeight + 
-						'&z=9&scale=' + (window.devicePixelRatio > 1 ? 2 : 1) + 
-						(window._locals.isDark ? '&dark=1' : '') +
-						'&lang=' + ymapLocale +
-						(osm ? '&osm=1' : '') +
-						'&style=tags.any:landscape|tags.none:land|stylers[0-7].visibility:off'
-				});
-			}
-
-			tag('script', { 
-				src: 'https://api-maps.yandex.ru/3.0/?lang=' + ymapLocale + '&apikey=99bafc0f-ef36-47f7-bc62-3c2b0aa3fa91' +
-					(osm ? '&data_provider=osm' : ''),
-				type: 'text/javascript'
-			});
 
 			var queryFunc = hasLL ? 'weatherByPoint' : 'weatherByGeoId';
 			var queryLang = lang.toUpperCase();
@@ -71,7 +50,7 @@
 				location: { lon: true, lat: true }
 			};
 			window._soyuzLog = log;
-			window._soyuzRequest = fetch('/weather/api/query?soyuz=1', {
+			window._soyuzRequest = fetch('https://meteum.ai/weather/api/query?soyuz=1', {
 				method: 'POST',
 				body: JSON.stringify({ query: query }),
 				headers: { 'content-type': 'application/json' }
