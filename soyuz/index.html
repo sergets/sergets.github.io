@@ -11,7 +11,7 @@
 				}
 			}
 
-            window._locals = { isDark: /(^|[?&])theme=dark(\&|$)/.test(location.href) || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches), static: './static' };
+            window._locals = { isDark: /(^|[?&])theme=dark(\&|$)/.test(location.href) || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches), static: '' };
             if (window._locals.isDark) { document.documentElement.className = 'dark'; }
         </script>
 		<script>
